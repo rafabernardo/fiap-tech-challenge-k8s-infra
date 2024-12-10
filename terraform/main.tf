@@ -1,4 +1,4 @@
-resource "aws_eks_cluster" "eks-fiap-tec" {
+resource "aws_eks_cluster" "eks-fiap-tech" {
   kubernetes_network_config {
     ip_family         = "ipv4"
     service_ipv4_cidr = var.serviceIpv4
