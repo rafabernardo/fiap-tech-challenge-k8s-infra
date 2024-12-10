@@ -52,11 +52,13 @@ jobs:
         run: terraform init -backend-config="bucket=${BUCKET_TF_STATE}"
 
       - name: Terraform Validate
+        working-directory: ./terraform
         run: terraform validate
 
       - name: Terraform Plan
         id: plan
         if: github.event_name == 'pull_request'
+        working-directory: ./terraform
         run: terraform plan -no-color -out=tfplan -input=false
         continue-on-error: true
 
