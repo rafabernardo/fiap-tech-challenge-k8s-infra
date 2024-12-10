@@ -45,14 +45,55 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
+      - name: Terraform Plan
+        id: plan
+        if: github.event_name == 'pull_request'
+        run: terraform plan -no-color -out=tfplan -input=false
+        continue-on-error: true
+
+      - uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: ${{ steps.plan.outputs.stdout }}
+        with:
+          github-token: ${{ secrets.ACTION_GITHUB_TOKEN }}
+          script: |
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+            <details><summary>Show Plan</summary>
+
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+
       - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false
         working-directory: ./terraform
 
       - name: Update kubeconfig
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }}
 
       - name: Create ConfigMap from GitHub secrets
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
           kubectl create configmap env-config \
             --from-literal=MONGO_URI=${{ secrets.MONGO_URI }} \
@@ -68,6 +109,7 @@ jobs:
             --from-literal=POSTGRESQL_PASSWORD=${{ secrets.POSTGRESQL_PASSWORD }}
 
       - name: Deploy to Kubernetes
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
           kubectl apply -f ./infrastructure/kubernetes/metrics.yaml
           kubectl apply -f ./infrastructure/kubernetes/hpa.yaml
