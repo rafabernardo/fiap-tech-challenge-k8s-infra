@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fiap-soat
+  labels:
+    app: fiap-soat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fiap-soat
+  template:
+    metadata:
+      labels:
+        app: fiap-soat
+    spec:
+      containers:
+        - name: fiap-soat
+          image: 194982485425.dkr.ecr.us-east-1.amazonaws.com/ecr-fiap-image:latest
+          ports:
+            - containerPort: 80
+              name: http
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+          env:
+            - name: API_PORT
+              value: "80"
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: MONGO_URI
+            - name: MONGO_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: MONGO_URL
+            - name: MONGO_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: MONGO_PORT
+            - name: MONGO_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: MONGO_USERNAME
+            - name: MONGO_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: MONGO_PASSWORD
+            - name: MONGO_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: MONGO_DATABASE
+            - name: POSTGRESQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: POSTGRESQL_DATABASE
+            - name: POSTGRESQL_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: POSTGRESQL_URI
+            - name: POSTGRESQL_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: POSTGRESQL_URL
+            - name: POSTGRESQL_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: POSTGRESQL_USERNAME
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: POSTGRESQL_PASSWORD
+            - name: POSTGRESQL_PORT
+              value: "5432"

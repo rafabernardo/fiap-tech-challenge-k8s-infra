@@ -1,0 +1,75 @@
+name: Deploy to Kubernetes
+
+on:
+  push:
+    branches:
+      - main
+# Define environment variables
+env:
+  TF_LOG: INFO
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  BUCKET_TF_STATE: ${{ secrets.BUCKET_TF_STATE}}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Kubernetes
+        uses: azure/setup-kubectl@v1
+        with:
+          version: "latest"
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+
+      - name: Terraform Init
+        id: init
+        working-directory: ./terraform
+        run: terraform init -backend-config="bucket=${BUCKET_TF_STATE}"
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -input=false
+        working-directory: ./terraform
+
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }}
+
+      - name: Create ConfigMap from GitHub secrets
+        run: |
+          kubectl create configmap env-config \
+            --from-literal=MONGO_URI=${{ secrets.MONGO_URI }} \
+            --from-literal=MONGO_URL=${{ secrets.MONGO_URL }} \
+            --from-literal=MONGO_PORT=${{ secrets.MONGO_PORT }} \
+            --from-literal=MONGO_USERNAME=${{ secrets.MONGO_USERNAME }} \
+            --from-literal=MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }} \
+            --from-literal=MONGO_DATABASE=${{ secrets.MONGO_DATABASE }} \
+            --from-literal=POSTGRESQL_DATABASE=${{ secrets.POSTGRESQL_DATABASE }} \
+            --from-literal=POSTGRESQL_URI=${{ secrets.POSTGRESQL_URI }} \
+            --from-literal=POSTGRESQL_URL=${{ secrets.POSTGRESQL_URL }} \
+            --from-literal=POSTGRESQL_USERNAME=${{ secrets.POSTGRESQL_USERNAME }} \
+            --from-literal=POSTGRESQL_PASSWORD=${{ secrets.POSTGRESQL_PASSWORD }}
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f ./infrastructure/kubernetes/metrics.yaml
+          kubectl apply -f ./infrastructure/kubernetes/hpa.yaml
+          kubectl apply -f ./infrastructure/kubernetes/deployment.yaml
+          kubectl apply -f ./infrastructure/kubernetes/service.yml
