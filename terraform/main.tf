@@ -37,7 +37,7 @@ resource "aws_eks_node_group" "eks-fiap-tech-node" {
     max_size     = 2
   }
 
-  depends_on = [aws_eks_cluster.eks-fiap-tec]
+  depends_on = [aws_eks_cluster.eks-fiap-tech]
 }
 
 resource "aws_eks_addon" "aws_ebs_csi_driver" {
@@ -62,7 +62,7 @@ resource "aws_security_group_rule" "allow_eks_to_rds" {
 resource "aws_security_group" "eks-sg" {
   name        = "eks-default-sg"
   description = "Default security group for the EKS cluster"
-  vpc_id      = aws_eks_cluster.eks-fiap-tec.vpc_config[0].vpc_id
+  vpc_id      = aws_eks_cluster.eks-fiap-tech.vpc_config[0].vpc_id
 }
 
 resource "aws_eks_addon" "vpc_cni" {
