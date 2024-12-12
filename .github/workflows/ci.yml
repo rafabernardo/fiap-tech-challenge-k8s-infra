@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up Kubernetes
-        uses: azure/setup-kubectl@v1
+        uses: azure/setup-kubectl@v4
         with:
           version: "latest"
 
@@ -102,22 +102,6 @@ jobs:
       - name: Update kubeconfig
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }}
-
-      - name: Create ConfigMap from GitHub secrets
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: |
-          kubectl create configmap env-config \
-            --from-literal=MONGO_URI=${{ secrets.MONGO_URI }} \
-            --from-literal=MONGO_URL=${{ secrets.MONGO_URL }} \
-            --from-literal=MONGO_PORT=${{ secrets.MONGO_PORT }} \
-            --from-literal=MONGO_USERNAME=${{ secrets.MONGO_USERNAME }} \
-            --from-literal=MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }} \
-            --from-literal=MONGO_DATABASE=${{ secrets.MONGO_DATABASE }} \
-            --from-literal=POSTGRESQL_DATABASE=${{ secrets.POSTGRESQL_DATABASE }} \
-            --from-literal=POSTGRESQL_URI=${{ secrets.POSTGRESQL_URI }} \
-            --from-literal=POSTGRESQL_URL=${{ secrets.POSTGRESQL_URL }} \
-            --from-literal=POSTGRESQL_USERNAME=${{ secrets.POSTGRESQL_USERNAME }} \
-            --from-literal=POSTGRESQL_PASSWORD=${{ secrets.POSTGRESQL_PASSWORD }}
 
       - name: Deploy to Kubernetes
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'

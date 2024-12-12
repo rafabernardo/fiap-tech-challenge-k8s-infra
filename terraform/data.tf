@@ -26,11 +26,11 @@ data "aws_security_group" "eks-sg" {
   id = aws_eks_cluster.eks-fiap-tech.vpc_config[0].cluster_security_group_id
 }
 
-data "terraform_remote_state" "rds" {
-  backend = "s3"
-  config = {
-    bucket = "fiap-tech-challenge-terraform"
-    key    = "fiap-tech-challenge-terraform-db/terraform.tfstate"
-    region = "us-east-1"
-  }
-}
+# data "terraform_remote_state" "rds" {
+#   backend = "s3"
+#   config = {
+#     bucket = "fiap-tech-challenge-terraform"
+#     key    = "fiap-tech-challenge-terraform-db/terraform.tfstate"
+#     region = "us-east-1"
+#   }
+# }
