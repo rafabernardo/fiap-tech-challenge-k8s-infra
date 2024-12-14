@@ -1,11 +1,14 @@
 terraform {
   backend "s3" {
-    bucket = "${var.s3BucketName}"
-    key    = "${var.s3BucketName}-eks/terraform.tfstate"
+    bucket = "fiap-tech-challenge-terraform-145360588665"
+    key    = "fiap-tech-challenge-terraform-145360588665/terraform.tfstate"
     region = "us-east-1"
   }
 }
-
 provider "aws" {
   region = var.regionDefault
+}
+
+provider "kubernetes" {
+  config_path = "~/.kube/config"
 }

@@ -46,7 +46,3 @@ variable "accountId"{
   type = string
   default = "194982485425"
 }
-
-variable "s3BucketName"{
-  default = "fiap-tech-challenge-terraform"
-}
