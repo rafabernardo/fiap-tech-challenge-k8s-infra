@@ -30,9 +30,6 @@ variable "policyArn" {
   default = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
 }
 
-variable "principalArn" {
-  default = "arn:aws:iam::194982485425:role/voclabs"
-}
 
 variable "accessConfig" {
   default = "API_AND_CONFIG_MAP"
@@ -40,4 +37,16 @@ variable "accessConfig" {
 
 variable "vpcCidr" {
   default = "172.31.0.0/16"
+}
+
+variable "dbUsername" {
+  default = "db_user"
+}
+variable "accountId"{
+  type = string
+  default = "194982485425"
+}
+
+variable "s3BucketName"{
+  default = "fiap-tech-challenge-terraform"
 }

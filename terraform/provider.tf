@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket = "fiap-tech-challenge-terraform"
-    key    = "fiap-tech-challenge-terraform-eks/terraform.tfstate"
+    bucket = "${var.s3BucketName}"
+    key    = "${var.s3BucketName}-eks/terraform.tfstate"
     region = "us-east-1"
   }
 }
