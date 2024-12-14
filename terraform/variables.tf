@@ -14,20 +14,12 @@ variable "nodeInstanceType" {
   default = "t3a.medium"
 }
 
-variable "labRole" {
-  default = "arn:aws:iam::194982485425:role/LabRole"
-}
-
 variable "projectName" {
   default = "fiap-tech-challenge"
 }
 
 variable "securityGroupeName" {
   default = "eks-sg"
-}
-
-variable "vpcId" {
-  default = "vpc-04420e52d5db86655"
 }
 
 variable "instanceType" {
@@ -44,4 +36,8 @@ variable "principalArn" {
 
 variable "accessConfig" {
   default = "API_AND_CONFIG_MAP"
+}
+
+variable "vpcCidr" {
+  default = "172.31.0.0/16"
 }

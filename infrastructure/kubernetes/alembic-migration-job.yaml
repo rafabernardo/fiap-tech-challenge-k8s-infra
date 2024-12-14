@@ -1,32 +1,14 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
-  name: fiap-soat
-  labels:
-    app: fiap-soat
+  name: alembic-migration-job
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: fiap-soat
   template:
-    metadata:
-      labels:
-        app: fiap-soat
     spec:
       containers:
-        - name: fiap-soat
+        - name: alembic-migration
           image: 194982485425.dkr.ecr.us-east-1.amazonaws.com/ecr-fiap-image:latest
-          ports:
-            - containerPort: 3000
-              name: http
-          resources:
-            limits:
-              cpu: "500m"
-              memory: "512Mi"
-            requests:
-              cpu: "200m"
-              memory: "256Mi"
+          command: ["alembic", "upgrade", "head"]
           env:
             - name: API_PORT
               value: "3000"
@@ -54,3 +36,4 @@ spec:
               value: "password_fiap"
             - name: POSTGRESQL_PORT
               value: "5432"
+      restartPolicy: OnFailure

@@ -1,6 +1,6 @@
 resource "aws_security_group" "sg" {
   name   = var.securityGroupeName
-  vpc_id = var.vpcId
+  vpc_id = data.aws_vpc.vpc.id
 
   ingress {
     description = "All"
@@ -30,7 +30,7 @@ resource "aws_security_group" "sg" {
 
 resource "aws_security_group" "rds_sg" {
   name   = "${var.projectName}-rds-sg"
-  vpc_id = var.vpcId
+  vpc_id = data.aws_vpc.vpc.id
 
   ingress {
     description     = "Allow Postgres traffic from EKS nodes"
