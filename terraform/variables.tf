@@ -39,10 +39,11 @@ variable "vpcCidr" {
   default = "172.31.0.0/16"
 }
 
-variable "dbUsername" {
-  default = "db_user"
-}
 variable "accountId"{
   type = string
   default = "194982485425"
+}
+
+variable "apiImage" {
+  default = "ecr-fiap-image:latest"
 }
