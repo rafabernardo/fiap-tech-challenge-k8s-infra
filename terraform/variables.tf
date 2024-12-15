@@ -6,38 +6,43 @@ variable "eksName" {
   default = "eks-fiap-tech"
 }
 
-variable "eksVersion" {
-  default = "1.29"
-}
-
-variable "serviceIpv4" {
-  default = "10.100.0.0/16"
-}
-
 variable "nodeGroupName" {
   default = "eks-fiap-tech-node"
 }
 
-variable "nodeDiskSize" {
-  default = 20
-}
-
 variable "nodeInstanceType" {
-  default = "c3.xlarge"
+  default = "t3a.medium"
 }
 
-variable "nodeCapacityType" {
-  default = "ON_DEMAND"
+variable "projectName" {
+  default = "fiap-tech-challenge"
 }
 
-variable "nodeAmiType" {
-  default = "AL2_x86_64"
+variable "securityGroupeName" {
+  default = "eks-sg"
 }
 
-variable "ebsAddonName" {
-  default = "aws-ebs-csi-driver"
+variable "instanceType" {
+  default = "t3a.medium"
 }
 
-variable "ebsAddonVersion" {
-  default = "v1.28.0-eksbuild.1"
+variable "policyArn" {
+  default = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+}
+
+variable "accessConfig" {
+  default = "API_AND_CONFIG_MAP"
+}
+
+variable "vpcCidr" {
+  default = "172.31.0.0/16"
+}
+
+variable "accountId" {
+  type    = string
+  default = "194982485425"
+}
+
+variable "apiImage" {
+  default = "ecr-fiap-image:latest"
 }
