@@ -16,20 +16,19 @@ resource "kubernetes_deployment" "api-deployment" {
         }
       }
       spec {
-        restart_policy = "Always"
         container {
-          image   = var.apiImage
+          image   = var.api_image
           name    = "api-deployment"
           command = ["sh", "-c", "./scripts/api.sh"]
 
 
           resources {
             limits = {
-              cpu    = "1"
+              cpu    = "1500m"
               memory = "512Mi"
             }
             requests = {
-              cpu    = "500m"
+              cpu    = "1m"
               memory = "256Mi"
             }
           }
@@ -43,7 +42,7 @@ resource "kubernetes_deployment" "api-deployment" {
           }
           env {
             name  = "POSTGRESQL_URL"
-            value = data.terraform_remote_state.rds.outputs.url
+            value = var.db_url
           }
           env {
             name  = "POSTGRESQL_USERNAME"
@@ -55,7 +54,7 @@ resource "kubernetes_deployment" "api-deployment" {
           }
           env {
             name  = "POSTGRESQL_DATABASE"
-            value = data.terraform_remote_state.rds.outputs.db-name
+            value = var.db_db_name
           }
         }
       }

@@ -1,11 +1,11 @@
 resource "aws_eks_node_group" "eks-fiap-tech-node" {
   cluster_name    = aws_eks_cluster.eks-fiap-tech.name
-  node_group_name = var.nodeGroupName
-  node_role_arn   = data.aws_iam_role.name.arn
-  subnet_ids      = [for subnet in data.aws_subnet.subnet : subnet.id if subnet.availability_zone != "${var.regionDefault}e"]
+  node_group_name = var.node_group_name
+  node_role_arn   = var.role_arn
+  subnet_ids      = var.subnet_ids
   disk_size       = 20
   instance_types = [
-    var.nodeInstanceType
+    var.node_instance_type
   ]
 
 
