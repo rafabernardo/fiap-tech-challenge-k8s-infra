@@ -21,10 +21,11 @@ module "security_group" {
 }
 
 module "api" {
-  source     = "./modules/api"
-  api_image  = var.apiImage
-  db_url     = module.db.url
-  db_db_name = module.db.db-name
+  source      = "./modules/api"
+  api_image   = var.apiImage
+  db_url      = module.db.url
+  db_db_name  = module.db.db-name
+  secret-name = module.db.secret-name
 
   depends_on = [module.eks, module.security_group, module.db]
 }
@@ -40,4 +41,8 @@ output "db-name" {
 
 output "url" {
   value = module.db.url
+}
+
+output "db-secret-name" {
+  value = module.db.secret-name
 }

@@ -9,3 +9,7 @@ variable "db_url" {
 variable "db_db_name" {
   type = string
 }
+
+variable "secret-name" {
+  type = string
+}

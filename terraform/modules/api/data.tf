@@ -1,7 +1,7 @@
 
 
 data "aws_secretsmanager_secret" "db" {
-  name = "database-secrets-2"
+  name = var.secret-name
 }
 
 data "aws_secretsmanager_secret_version" "db" {
