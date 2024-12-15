@@ -16,60 +16,46 @@ resource "kubernetes_deployment" "api-deployment" {
         }
       }
       spec {
+        restart_policy = "Always"
         container {
-          image = var.apiImage
-          name  = "api-deployment"
+          image   = var.apiImage
+          name    = "api-deployment"
           command = ["sh", "-c", "./scripts/api.sh"]
+
+
+          resources {
+            limits = {
+              cpu    = "1"
+              memory = "512Mi"
+            }
+            requests = {
+              cpu    = "500m"
+              memory = "256Mi"
+            }
+          }
+
           port {
             container_port = 80
           }
           env {
-            name="API_PORT"
-            value="80"
+            name  = "API_PORT"
+            value = "80"
           }
           env {
-            name="MONGO_URL"
-            value="MONGO_URL"
+            name  = "POSTGRESQL_URL"
+            value = data.terraform_remote_state.rds.outputs.url
           }
           env {
-            name="MONGO_PORT"
-            value="12345"
+            name  = "POSTGRESQL_USERNAME"
+            value = jsondecode(data.aws_secretsmanager_secret_version.db.secret_string)["db-username"]
           }
           env {
-            name="MONGO_USERNAME"
-            value="MONGO_USERNAME"
+            name  = "POSTGRESQL_PASSWORD"
+            value = jsondecode(data.aws_secretsmanager_secret_version.db.secret_string)["db-password"]
           }
           env {
-            name="MONGO_PASSWORD"
-            value="MONGO_PASSWORD"
-          }
-          env {
-            name="MONGO_DATABASE"
-            value="MONGO_DATABASE"
-          }
-          env {
-            name="POSTGRESQL_URI"
-            value="postgresql://user:password@localhost:5432/postgres"
-          }
-          env {
-            name="POSTGRESQL_URL"
-            value="POSTGRESQL_URL"
-          }
-          env {
-            name="POSTGRESQL_PORT"
-            value="5432"
-          }
-          env {
-            name="POSTGRESQL_USERNAME"
-            value="POSTGRESQL_USERNAME"
-          }
-          env {
-            name="POSTGRESQL_PASSWORD"
-            value="POSTGRESQL_PASSWORD"
-          }
-          env {
-            name="POSTGRESQL_DATABASE"
-            value="POSTGRESQL_DATABASE"
+            name  = "POSTGRESQL_DATABASE"
+            value = data.terraform_remote_state.rds.outputs.db-name
           }
         }
       }

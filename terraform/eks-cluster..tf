@@ -12,6 +12,5 @@ resource "aws_eks_cluster" "eks-fiap-tech" {
   access_config {
     authentication_mode = var.accessConfig
   }
-
-
 }
+
