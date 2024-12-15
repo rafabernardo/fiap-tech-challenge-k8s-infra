@@ -54,7 +54,11 @@ jobs:
         id: plan
         if: github.event_name == 'pull_request'
         working-directory: ./terraform
-        run: terraform plan -no-color -out=tfplan -input=false
+        env:
+          API_IMAGE: ${{ secrets.API_IMAGE }}
+        run: |
+          echo "apiImage = \"${API_IMAGE}\"" >> terraform.tfvars
+          terraform plan -no-color -out=tfplan -var-file=terraform.tfvars -input=false
         continue-on-error: true
 
       - uses: actions/github-script@v6
