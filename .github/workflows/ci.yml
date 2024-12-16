@@ -6,13 +6,11 @@ on:
       - main
     paths:
       - terraform/**
-      - infrastructure/**
   pull_request:
     branches:
       - main
     paths:
       - terraform/**
-      - infrastructure/**
 # Define environment variables
 env:
   TF_LOG: INFO
@@ -95,5 +93,10 @@ jobs:
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve -input=false
         working-directory: ./terraform
+        env:
+          API_IMAGE: ${{ secrets.API_IMAGE }}
+        run: |
+          echo "apiImage = \"${API_IMAGE}\"" >> terraform.tfvars
+          echo $API_IMAGE
+          terraform apply -auto-approve -input=false
