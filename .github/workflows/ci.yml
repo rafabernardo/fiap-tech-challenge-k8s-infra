@@ -29,7 +29,7 @@ jobs:
       - name: Terraform Init and Apply
         env:
           API_IMAGE: ${{ secrets.API_IMAGE }}
-
+          BUCKET_TF_STATE: ${{ secrets.BUCKET_TF_STATE}}
         run: |
           cd terraform
           terraform init -backend-config="bucket=${BUCKET_TF_STATE}"
