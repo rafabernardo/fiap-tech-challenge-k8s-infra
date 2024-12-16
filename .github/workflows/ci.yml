@@ -23,6 +23,10 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./terraform
 
     steps:
       - name: Checkout code
@@ -41,17 +45,14 @@ jobs:
 
       - name: Terraform Init
         id: init
-        working-directory: ./terraform
         run: terraform init -backend-config="bucket=${BUCKET_TF_STATE}"
 
       - name: Terraform Validate
-        working-directory: ./terraform
         run: terraform validate
 
       - name: Terraform Plan
         id: plan
         if: github.event_name == 'pull_request'
-        working-directory: ./terraform
         env:
           API_IMAGE: ${{ secrets.API_IMAGE }}
         run: |
