@@ -36,4 +36,4 @@ jobs:
           echo "apiImage = \"${API_IMAGE}\"" >> terraform.tfvars
           echo ${API_IMAGE}
           terraform plan out=tfplan
-          terraform apply "tfplan" -auto-approve
+          terraform apply "tfplan"
