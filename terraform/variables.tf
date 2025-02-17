@@ -1,48 +1,44 @@
-variable "regionDefault" {
+variable "region_default" {
   default = "us-east-1"
 }
 
-variable "eksName" {
+variable "eks_name" {
   default = "eks-fiap-tech"
 }
 
-variable "nodeGroupName" {
+variable "node_grou_name" {
   default = "eks-fiap-tech-node"
 }
 
-variable "nodeInstanceType" {
+variable "node_instance_type" {
   default = "t3a.medium"
 }
 
-variable "projectName" {
+variable "project_name" {
   default = "fiap-tech-challenge"
 }
 
-variable "securityGroupeName" {
+variable "security_groupe_name" {
   default = "eks-sg"
 }
 
-variable "instanceType" {
-  default = "t3a.medium"
-}
-
-variable "policyArn" {
+variable "policy_arn" {
   default = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
 }
 
-variable "accessConfig" {
+variable "access_config" {
   default = "API_AND_CONFIG_MAP"
 }
 
-variable "vpcCidr" {
+variable "vpc_cidr" {
   default = "172.31.0.0/16"
 }
 
-variable "accountId" {
+variable "account_id" {
   type    = string
-  default = "194982485425"
+  default = "911766435517"
 }
 
-variable "apiImage" {
-  default = "ecr-fiap-image:latest"
+variable "mongo_db_url" {
+  type = string
 }

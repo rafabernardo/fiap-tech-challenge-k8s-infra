@@ -1,11 +1,11 @@
-resource "kubernetes_service" "fastapi_service" {
+resource "kubernetes_service" "product_service_lb" {
   metadata {
-    name      = "api-service"
+    name = "product-service-lb"
   }
 
   spec {
     selector = {
-      app = "api-deployment"
+      app = "product-service-api"
     }
 
     port {

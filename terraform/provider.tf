@@ -8,7 +8,7 @@ terraform {
 
 }
 provider "aws" {
-  region = var.regionDefault
+  region = var.region_default
 }
 
 
