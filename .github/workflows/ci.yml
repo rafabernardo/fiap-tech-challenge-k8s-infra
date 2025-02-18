@@ -56,7 +56,9 @@ jobs:
         env:
           API_IMAGE: ${{ secrets.API_IMAGE }}
         run: |
-          echo "apiImage = \"${API_IMAGE}\"" >> terraform.tfvars
+          echo "mongo_db_url = \"${{ secrets.MONGO_DB_URL }}\"
+            mongo_db_url_payment = \"${{ secrets.MONGO_DB_URL_PAYMENT }}\"
+            " >> terraform.tfvars
           terraform plan -no-color -out=tfplan -var-file=terraform.tfvars -input=false
         continue-on-error: true
 
