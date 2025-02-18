@@ -26,6 +26,9 @@ jobs:
         with:
           terraform_wrapper: false
 
+      - name: Change Directory to Terraform
+        run: cd terraform
+
       - name: Terraform Init and Apply
         env:
           API_IMAGE: ${{ secrets.API_IMAGE }}
@@ -34,6 +37,7 @@ jobs:
           echo "mongo_db_url = \"${{ secrets.MONGO_DB_URL }}\"
             mongo_db_url_payment = \"${{ secrets.MONGO_DB_URL_PAYMENT }}\"
             " >> terraform.tfvars
+          terraform init
           terraform plan -no-color -out=tfplan -var-file=terraform.tfvars -input=false
         continue-on-error: true
 
