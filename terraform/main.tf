@@ -1,14 +1,14 @@
 module "eks" {
   source             = "./modules/eks"
-  eks_name           = var.eksName
-  node_group_name    = var.nodeGroupName
-  node_instance_type = var.nodeInstanceType
-  subnet_ids         = [for subnet in data.aws_subnet.subnet : subnet.id if subnet.availability_zone != "${var.regionDefault}e"]
+  eks_name           = var.eks_name
+  node_group_name    = var.node_grou_name
+  node_instance_type = var.node_instance_type
+  subnet_ids         = [for subnet in data.aws_subnet.subnet : subnet.id if subnet.availability_zone != "${var.region_default}e"]
   security_group_id  = module.security_group.security_group_id
-  access_config      = var.accessConfig
-  region             = var.regionDefault
-  account_id         = var.accountId
-  policy_arn         = var.policyArn
+  access_config      = var.access_config
+  region             = var.region_default
+  account_id         = var.account_id
+  policy_arn         = var.policy_arn
   role_arn           = data.aws_iam_role.name.arn
 
   depends_on = [module.security_group, module.db]
@@ -16,33 +16,51 @@ module "eks" {
 
 module "security_group" {
   source              = "./modules/security_group"
-  security_group_name = var.securityGroupeName
+  security_group_name = var.security_groupe_name
   vpc_id              = data.aws_vpc.vpc.id
 }
 
-module "api" {
-  source      = "./modules/api"
-  api_image   = var.apiImage
+module "user_service_api" {
+  source      = "./modules/user_service"
+  api_image   = module.ecr_user_service.user_ecr_repository_url
   db_url      = module.db.url
   db_db_name  = module.db.db-name
   secret-name = module.db.secret-name
 
-  depends_on = [module.eks, module.security_group, module.db]
+  depends_on = [module.eks, module.security_group, module.db, module.ecr_user_service]
 }
 
+module "product_service_api" {
+  source              = "./modules/product_service"
+  api_image           = module.ecr_product_service.product_ecr_repository_url
+  db_url              = var.mongo_db_url
+  user_service_url    = module.user_service_api.url
+  payment_service_url = module.payment_service_api.url
+
+  depends_on = [module.eks, module.security_group, module.ecr_product_service, module.user_service_api, module.payment_service_api]
+}
+
+module "payment_service_api" {
+  source         = "./modules/payment_service"
+  api_image      = module.ecr_payment_service.payment_ecr_repository_url
+  db_url_payment = var.mongo_db_url_payment
+
+  depends_on = [module.eks, module.security_group]
+}
 module "db" {
-  source            = "git::https://github.com/rafabernardo/fiap-tech-challenge-db-infra.git//terraform?ref=main"
+  source            = "./modules/db"
   security_group_id = module.security_group.security_group_id
+  aws_region        = var.region_default
 }
 
-output "db-name" {
-  value = module.db.db-name
+module "ecr_user_service" {
+  source = "./modules/ecr_user_service"
 }
 
-output "url" {
-  value = module.db.url
+module "ecr_product_service" {
+  source = "./modules/ecr_product_service"
 }
 
-output "db-secret-name" {
-  value = module.db.secret-name
+module "ecr_payment_service" {
+  source = "./modules/ecr_payment_service"
 }

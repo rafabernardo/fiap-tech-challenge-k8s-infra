@@ -31,8 +31,44 @@ jobs:
           API_IMAGE: ${{ secrets.API_IMAGE }}
           BUCKET_TF_STATE: ${{ secrets.BUCKET_TF_STATE}}
         run: |
-          cd terraform
-          terraform init -backend-config="bucket=${BUCKET_TF_STATE}"
-          echo "apiImage = \"${API_IMAGE}\"" >> terraform.tfvars
-          echo ${API_IMAGE}
-          terraform apply -auto-approve
+          echo "mongo_db_url = \"${{ secrets.MONGO_DB_URL }}\"
+            mongo_db_url_payment = \"${{ secrets.MONGO_DB_URL_PAYMENT }}\"
+            " >> terraform.tfvars
+          terraform plan -no-color -out=tfplan -var-file=terraform.tfvars -input=false
+        continue-on-error: true
+
+      - uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: ${{ steps.plan.outputs.stdout }}
+        with:
+          github-token: ${{ secrets.ACTION_GITHUB_TOKEN }}
+          script: |
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+            <details><summary>Show Plan</summary>
+
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve -input=false
