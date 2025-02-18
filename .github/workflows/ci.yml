@@ -26,15 +26,14 @@ jobs:
         with:
           terraform_wrapper: false
 
-      - name: Change Directory to Terraform
-        run: cd terraform
-
       - name: Terraform Init
         id: init
         run: terraform init -backend-config="bucket=${BUCKET_TF_STATE}"
+        working-directory: terraform
 
       - name: Terraform Validate
         run: terraform validate
+        working-directory: terraform
 
       - name: Terraform plan
         id: plan
@@ -45,6 +44,7 @@ jobs:
           echo "mongo_db_url_payment = \"${{ secrets.MONGO_DB_URL_PAYMENT }}\"" >> terraform.tfvars
           terraform plan -no-color -out=tfplan -var-file=terraform.tfvars -input=false
         continue-on-error: false
+        working-directory: terraform
 
       - uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
@@ -52,6 +52,7 @@ jobs:
           PLAN: ${{ steps.plan.outputs.stdout }}
         with:
           github-token: ${{ secrets.ACTION_GITHUB_TOKEN }}
+          working-directory: terraform
           script: |
             const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
             #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
