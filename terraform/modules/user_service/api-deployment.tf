@@ -17,9 +17,10 @@ resource "kubernetes_deployment" "user_service_api" {
       }
       spec {
         container {
-          image   = "${var.api_image}:latest"
-          name    = "user-service-api-container"
-          command = ["sh", "-c", "./scripts/api.sh"]
+          image             = "${var.api_image}:latest"
+          name              = "user-service-api-container"
+          command           = ["sh", "-c", "./scripts/api.sh"]
+          image_pull_policy = "Always"
 
 
           resources {

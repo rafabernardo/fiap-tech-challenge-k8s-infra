@@ -42,3 +42,7 @@ variable "account_id" {
 variable "mongo_db_url" {
   type = string
 }
+
+variable "mongo_db_url_payment" {
+  type = string
+}

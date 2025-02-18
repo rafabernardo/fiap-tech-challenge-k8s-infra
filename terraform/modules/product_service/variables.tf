@@ -9,3 +9,7 @@ variable "db_url" {
 variable "user_service_url" {
   type = string
 }
+
+variable "payment_service_url" {
+  type = string
+}

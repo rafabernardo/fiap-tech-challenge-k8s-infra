@@ -31,12 +31,21 @@ module "user_service_api" {
 }
 
 module "product_service_api" {
-  source           = "./modules/product_service"
-  api_image        = module.ecr_product_service.product_ecr_repository_url
-  db_url           = var.mongo_db_url
-  user_service_url = module.user_service_api.url
+  source              = "./modules/product_service"
+  api_image           = module.ecr_product_service.product_ecr_repository_url
+  db_url              = var.mongo_db_url
+  user_service_url    = module.user_service_api.url
+  payment_service_url = module.payment_service_api.url
 
-  depends_on = [module.eks, module.security_group, module.ecr_product_service, module.user_service_api]
+  depends_on = [module.eks, module.security_group, module.ecr_product_service, module.user_service_api, module.payment_service_api]
+}
+
+module "payment_service_api" {
+  source         = "./modules/payment_service"
+  api_image      = module.ecr_payment_service.payment_ecr_repository_url
+  db_url_payment = var.mongo_db_url_payment
+
+  depends_on = [module.eks, module.security_group]
 }
 module "db" {
   source            = "./modules/db"
@@ -52,4 +61,6 @@ module "ecr_product_service" {
   source = "./modules/ecr_product_service"
 }
 
-
+module "ecr_payment_service" {
+  source = "./modules/ecr_payment_service"
+}

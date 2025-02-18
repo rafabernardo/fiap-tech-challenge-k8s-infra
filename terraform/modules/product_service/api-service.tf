@@ -16,3 +16,6 @@ resource "kubernetes_service" "product_service_lb" {
     type = "LoadBalancer"
   }
 }
+
+
+

@@ -1,24 +1,24 @@
-resource "kubernetes_deployment" "product_service_api" {
+resource "kubernetes_deployment" "payment_service_api" {
   metadata {
-    name = "product-service-api"
+    name = "payment-service-api"
   }
   spec {
     replicas = 1
     selector {
       match_labels = {
-        app = "product-service-api"
+        app = "payment-service-api"
       }
     }
     template {
       metadata {
         labels = {
-          app = "product-service-api"
+          app = "payment-service-api"
         }
       }
       spec {
         container {
           image             = "${var.api_image}:latest"
-          name              = "product-service-api-container"
+          name              = "payment-service-api-container"
           image_pull_policy = "Always"
 
 
@@ -46,24 +46,12 @@ resource "kubernetes_deployment" "product_service_api" {
           }
           env {
             name  = "MONGO_URI"
-            value = var.db_url
+            value = var.db_url_payment
           }
-          env {
-            name  = "AUTHENTICATION_URL"
-            value = var.user_service_url
-          }
-          env {
-            name  = "API_URL"
-            value = "http://product-service-lb"
-          }
-          env {
-            name  = "PAYMENT_URL"
-            value = var.payment_service_url
-          }
+
         }
       }
     }
   }
 }
-
 
