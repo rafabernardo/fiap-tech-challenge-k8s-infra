@@ -28,6 +28,8 @@ jobs:
 
       - name: Terraform Init
         id: init
+        env:
+          BUCKET_TF_STATE: ${{ secrets.BUCKET_TF_STATE }}
         run: terraform init -backend-config="bucket=${BUCKET_TF_STATE}"
         working-directory: terraform
 
